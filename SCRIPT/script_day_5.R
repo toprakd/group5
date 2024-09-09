@@ -17,8 +17,18 @@ skimr::skim(exam_nontidy)
 
 
 
+#Changing the names of coloumns
+exam_nontidy <- 
+  exam_nontidy %>% 
+  rename(insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5_year = `5y diabetes`,
+         cholesterol = choleste)
+
+
+
+
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
-test <- exam_nontidy %>%
+exam_nontidy <- exam_nontidy %>%
   distinct() %>% 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value)
