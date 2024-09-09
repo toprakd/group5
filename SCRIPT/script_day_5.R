@@ -14,3 +14,10 @@ summary(exam_nontidy)
 str(exam_nontidy)
 glimpse(exam_nontidy)
 skimr::skim(exam_nontidy)
+
+
+exam_nontidy <- 
+  exam_nontidy %>% 
+  rename(insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5_year = `5y diabetes`,
+         cholesterol = choleste)
