@@ -40,9 +40,9 @@ df1 <- separate(df, "pregnancy_num-age", sep ="-",
 
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
 exam_tidy <- df1 %>%
-  distinct() %>% 
+  distinct() %>%   #remove duplicates 
   pivot_wider(names_from = `measured variable`, 
-              values_from = .value)
+              values_from = .value) #.value include values from 2 features/measurements
 
 
 
