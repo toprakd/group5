@@ -25,6 +25,17 @@ exam_nontidy <-
          cholesterol = choleste)
 
 
+#Separate variable subject into hospital and ID:
+df <- separate(exam_nontidy, subject, sep ="-",
+               into = c("hospital", "ID"))
+
+
+
+
+#Separate variable pregnancy_num-age into pregnancy_num and age:
+df1 <- separate(df, "pregnancy_num-age", sep ="-",
+                into = c("preg_num", "age"))
+
 
 
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
