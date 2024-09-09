@@ -43,3 +43,10 @@ exam_tidy <- df1 %>%
   distinct() %>% 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value)
+
+
+
+#saving the tidy data
+fileName <- paste0("exam_data_tidy", Sys.Date(), ".txt")
+write_delim(exam_tidy, 
+            file = here("DATA", fileName), delim="\t")
