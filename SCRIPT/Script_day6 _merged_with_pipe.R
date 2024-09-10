@@ -36,3 +36,6 @@ skimr::skim(tidy_data)
 #Explore and comment on missing data ----
 naniar::gg_miss_var(tidy_data)
 
+tidy_data %>%
+  group_by(hospital) %>%
+  summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
