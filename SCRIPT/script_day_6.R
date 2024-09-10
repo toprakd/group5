@@ -1,13 +1,16 @@
 library(tidyverse)
 library(here)
 
-#read data
+#Read data ----
 tidy_data <- read.delim(here("DATA/exam_data_tidy2024-09-09.txt"))
 
+#Remove unnecessary columns ----
+tidy_data <- tidy_data %>% 
+  select(- cholesterol, - sibling) 
 
+#All the variable types was logical, and no changes was done after discussing it with Janne.
 
-
-#Create  new columns
+#Create  new columns ----
 tidy_data <-
   tidy_data %>% 
   mutate(glucose_mg_dl_categoric = ifelse(glucose_mg_dl >120, "High", "Low"),
@@ -16,11 +19,11 @@ tidy_data <-
          multiplication_age_and_pregnancy_num= preg_num*age)
 
 
-#Arrange order
+#Arrange order ----
 tidy_data <-
   tidy_data %>% 
   select(ID, hospital, age, everything())
 
-#  Arrange ID column of your dataset in order of increasing number or alphabetically
+#  Arrange ID column by increasing order ----
 tidy_data <- tidy_data %>%
   arrange(ID)
