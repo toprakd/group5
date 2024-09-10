@@ -54,6 +54,22 @@ tidy_data  %>%
   summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num )) %>%
   filter(hospital == "Hosp1")
 
+# Only for persons with `pregnanyc_num` more than 2
+
+tidy_data  %>% 
+  filter(preg_num>2)%>% 
+  group_by(hospital) %>% 
+  summarise( min(preg_num), max(preg_num), mean(preg_num),sd(preg_num ))
+
+
+# `glucose_mg_dl` lower than 120 and `dbp_mm_hg` greater than 60
+
+tidy_data  %>% 
+  filter(glucose_mg_dl < 120, dbp_mm_hg > 60) %>% 
+  group_by(hospital) %>% 
+  summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
+
+
 # Use two categorical columns in your dataset to create a table (hint: ?count)
 tidy_data %>%
   group_by(hospital, diabetes_5_year) %>%
