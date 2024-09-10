@@ -21,10 +21,10 @@ tidy_data <- tidy_data %>%
   arrange(ID) %>%
   full_join(join_data, join_by("ID")) 
 
-#Explore data ----
 
-#Overview over the first part of the data frame
-head(tidy_data) 
+tidy_data  %>% 
+  group_by(hospital) %>% 
+  summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
 
 #Summary and overview of our data
 summary(tidy_data) 
@@ -46,3 +46,4 @@ tidy_data %>%
   filter(diabetes_5_year_binary == 1) %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
+
