@@ -20,3 +20,21 @@ tidy_data <- tidy_data %>%
   select(ID, hospital, age, everything()) %>% 
   arrange(ID) %>%
   full_join(join_data, join_by("ID")) 
+
+#Explore data ----
+
+#Overview over the first part of the data frame
+head(tidy_data) 
+
+#Summary and overview of our data
+summary(tidy_data) 
+
+glimpse(tidy_data)
+
+skimr::skim(tidy_data)
+
+#Explore and comment on missing data ----
+naniar::gg_miss_var(tidy_data)
+
+#There is missing data for five variables (insulin_microiu_ml, triceps_mm, dbd_mm_hg, BMI and glucose_mg_dl). 
+
