@@ -36,6 +36,13 @@ skimr::skim(tidy_data)
 #Explore and comment on missing data ----
 naniar::gg_miss_var(tidy_data)
 
+#Stratefying data----
 tidy_data %>%
+  group_by(hospital) %>%
+  summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
+
+#Diabetes 5 year pos 
+tidy_data %>%
+  filter(diabetes_5_year_binary == 1) %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
