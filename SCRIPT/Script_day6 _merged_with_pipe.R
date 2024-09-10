@@ -36,5 +36,3 @@ skimr::skim(tidy_data)
 #Explore and comment on missing data ----
 naniar::gg_miss_var(tidy_data)
 
-#There is missing data for five variables (insulin_microiu_ml, triceps_mm, dbd_mm_hg, BMI and glucose_mg_dl). 
-
