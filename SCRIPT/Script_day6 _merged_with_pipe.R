@@ -48,4 +48,10 @@ tidy_data %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
 
+# Only for persons recruited in Hosp1
+tidy_data  %>% 
+  group_by(hospital) %>% 
+  summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num )) %>%
+  filter(hospital == "Hosp1")
+
 
