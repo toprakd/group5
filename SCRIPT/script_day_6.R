@@ -27,3 +27,11 @@ tidy_data <-
 #  Arrange ID column by increasing order ----
 tidy_data <- tidy_data %>%
   arrange(ID)
+
+#  Read and join the additional dataset to your main dataset
+join_data <- read.delim(here("DATA/exam_joindata.txt"))
+join_data <- join_data %>%
+  rename(ID = id)
+
+combine_data <- tidy_data %>%
+  full_join(join_data, join_by("ID")) 
