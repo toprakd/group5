@@ -26,7 +26,7 @@ tidy_data  %>%
   group_by(hospital) %>% 
   summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
 
-<<<<<<< HEAD
+
 #Summary and overview of our data
 summary(tidy_data) 
 
@@ -48,5 +48,4 @@ tidy_data %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
 
-=======
->>>>>>> e385c2d5d2f18687483b83316ffc196429cb816f
+
