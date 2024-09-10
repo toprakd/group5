@@ -20,3 +20,9 @@ tidy_data <- tidy_data %>%
   select(ID, hospital, age, everything()) %>% 
   arrange(ID) %>%
   full_join(join_data, join_by("ID")) 
+
+
+tidy_data  %>% 
+  group_by(hospital) %>% 
+  summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
+
