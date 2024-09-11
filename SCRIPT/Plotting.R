@@ -6,6 +6,45 @@ library(here)
 #read data ----
 exam_tidy<- read_delim(here("DATA", "exam_data_tidy_modified2024-09-11.txt"))
 
+
+
+# to see are there any correlated measurements?
+
+
+
+library(ggcorrplot)
+numeric_data <- tidy_data %>%
+  select(where(is.numeric))
+
+# Compute the correlation matrix
+corr <- cor(numeric_data, use = "complete.obs")
+
+# Ploting
+ggcorrplot(
+  corr,
+  method = "square",           
+  type = "full",                #
+  ggtheme = ggplot2::theme_minimal(),
+  title = "Correlation Matrix",
+  show.legend = TRUE,
+  legend.title = "Corr",
+  show.diag = TRUE,             
+  colors = c("blue", "white", "red"),
+  outline.color = "gray",
+  hc.order = FALSE,             
+  lab = TRUE,                   
+  lab_col = "black",
+  lab_size = 4,
+  tl.cex = 12,                  
+  tl.col = "black",
+  tl.srt = 45,                  
+  digits = 2                   
+)
+
+
+# In the correlation matrix we mostly saw positive correlation. And especially, glucose_mg_dl and insulin_microiu_ml correalated, and bmi and triceps_mm were correlated
+
+
 # Correlated measurements? Does the level of glucose and insulin depend on each other? ----
 # --> Yes, looks like it
 
