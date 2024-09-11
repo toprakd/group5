@@ -64,7 +64,7 @@ ggplot(data = tidy_data) +
 
 
 
-# Create plot to examine the blood pressure distribution different between these BMI categories:
+# Create plot to examine the blood pressure distribution in different BMI categories:
 
 
 
