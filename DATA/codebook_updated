@@ -1,0 +1,49 @@
+Codebook for exam data
+AUTHOR
+Julia and Turkuler
+PUBLISHED
+September 11, 2022
+Data source
+
+MODIFIED:
+Group 5: Cathrine, Toprak and Siren 
+LAST REVISION
+September 11, 2024
+
+Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK
+
+A data frame with 768 observations on 16 variables, with significant missing data for some predictor variables.
+
+This dataset was collected with funding from the National Institute of Diabetes and Digestive and Kidney Diseases (NIDDK). The Pima Indian tribe located near Phoenix, Arizona (USA) has a very high rate of type 2 diabetes. This dataset includes a number of variables predictive of diabetes, and the outcome of a type 2 diabetes diagnosis within 5 years of the initial measurements. This dataset includes only females of at least 21 years of age, and of Pima Indian heritage, with at least 5 years of followup in a longitudinal study of diabetes.
+
+NOTE: The dataset has been transformed to a tidy format September 11, 2024. 
+
+Type 2 diabetes mellitus (DM) is associated with obesity and a diet high in sugars and low in vegetables. People with type 2 DM become less sensitive to insulin, so that after a glucose load, their blood glucose and insulin rise, but the glucose level does not fall as quickly as it should, leading to sustained elevations in glucose and insulin. The incidence of type 2 DM is rising in many western cultures, as increasingly unhealthy and calorie rich diets become common.
+
+The primary analysis task is to classify in each participant whether diabetes developed within 5 years of data collection (diabetes_5_year = pos), or the participant tested repeatedly negative for diabetes over the next 5 years (diabetes_5_year = neg).
+
+Codebook
+
+Main data:
+
+A data frame with 768 observations and 16 variables
+
+Variable	description	type:
+*ID: id number, random number; type: integer
+*hospital:hospital identifier (for imaginary 3 different hospitals) and a random number; type: character
+*age: age in years; type: integer
+*preg_num: number of pregnancies; type: integer
+*triceps_mm: triceps skin fold thickness in mm, a measure of subcutaneous fat	double; type: integer
+*insulin microiu ml	serum: insulin at 2 hours after administration of an oral glucose tolerance test in microIU per milliliter (IU is international units); type: integer
+*bmi:	body mass index, in kg of weight per meters of height squared; type:	double
+*pedigree: a diabetes pedigree score, with points added for each additional relative with diabetes, weighted for the closeness of their genetic relation to the participant; type:	double
+*diabetes_5_year: Diagnosis of diabetes in the following 5 years, factor: pos or neg; type: character
+*glucose_mg_dl: Plasma glucose concentration at 2 hours after administration of an oral glucose tolerance test in mg/deciliter; type: integer
+*dbp_mm_hg: diastolic blood pressure in millimeters of mercury (mm Hg); type: integer
+*glucose_mg_dl_categoric: glucose level, factor: High or Low; type: character
+*insuline_pmol_L: insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l), type: double
+*diabetes_5_year_binary: diabetes at 5 year, factor: 0 = negative, 1 = positive; type: double
+*multiplication_age_and_pregnancy_num: multiplication of `age` and `pregnancy_num` for each person; type: integer
+*antibody: antibody	measurement for an antibody; type: double
+
+
