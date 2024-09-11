@@ -74,3 +74,11 @@ tidy_data  %>%
 tidy_data %>%
   group_by(hospital, diabetes_5_year) %>%
   summarise(count = n())
+
+
+
+
+#saving the tidy data
+fileName <- paste0("exam_data_tidy_modified", Sys.Date(), ".txt")
+write_delim(tidy_data, 
+            file = here("DATA", fileName), delim="\t")
