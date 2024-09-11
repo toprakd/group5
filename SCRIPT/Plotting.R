@@ -44,3 +44,51 @@ ggplot(data = tidy_data) +
   geom_smooth(method = "lm")
 
 #There does not seem to be strong correlation between glucose and blood pressure.
+
+
+
+
+
+# Create plot to examine the relation between the `BMI` and `triceps_mm` values.
+#There was a strong relationship between `BMI` and `triceps_mm` in our data
+
+
+ggplot(data = tidy_data) +
+  aes(
+    x = bmi,
+    y = triceps_mm
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+
+
+# Create plot to examine the blood pressure distribution different between these BMI categories:
+
+
+
+library(tidyverse)
+
+# creating BMI categories and their order
+tidy_data <- tidy_data %>%
+  mutate(
+    bmi_category = case_when(
+      bmi < 25 ~ "healthy_weight",
+      bmi >= 25 & bmi < 30 ~ "over_weight",
+      bmi >= 30 ~ "obesity"
+    ),
+    # order of levels
+    bmi_category = factor(bmi_category, levels = c("healthy_weight", "over_weight", "obesity"))
+  )
+
+# Plotting 
+ggplot(data = tidy_data) +
+  aes(
+    x = bmi_category,
+    y = dbp_mm_hg
+  ) +
+  geom_boxplot()
+
+
+#Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
