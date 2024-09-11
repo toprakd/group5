@@ -32,3 +32,15 @@ ggplot(data = tidy_data) +
     se = FALSE,
     aes(color = diabetes_5_year)
   )
+
+#Create plot to examine the correlation between glucose and blood pressure:
+
+ggplot(data = tidy_data) +
+  aes(
+    x = glucose_mg_dl,
+    y = dbp_mm_hg
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+#There does not seem to be strong correlation between glucose and blood pressure.
