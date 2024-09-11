@@ -28,10 +28,11 @@ tidy_data <-
 tidy_data <- tidy_data %>%
   arrange(ID)
 
-#  Read and join the additional dataset to your main dataset
+#  Read and join the additional dataset to the main dataset ----
 join_data <- read.delim(here("DATA/exam_joindata.txt"))
 join_data <- join_data %>%
   rename(ID = id)
 
 combine_data <- tidy_data %>%
   full_join(join_data, join_by("ID")) 
+
