@@ -3,10 +3,11 @@ library(tidyverse)
 library(here)
 
 
-#read data
+#read data ----
 exam_tidy<- read_delim(here("DATA", "exam_data_tidy_modified2024-09-11.txt"))
 
-# Are there any correlated measurements? Does the level of glucose and insulin depend on each other? --> Yes
+# Correlated measurements? Does the level of glucose and insulin depend on each other? ----
+# --> Yes, looks like it
 
 ggplot(data = tidy_data) +
   aes(
@@ -16,7 +17,8 @@ ggplot(data = tidy_data) +
   geom_point()+
   geom_smooth(method = "lm")
 
-# Does the level of glucose and insulin depend on each other, when stratifying by outcome (`diabetes_5y`)? --> Yes, there is positive correlation on both, but looks like the correlation is stronger in negative diabetes
+# Does the level of glucose and insulin depend on each other, when stratifying by outcome (`diabetes_5y`)? ----
+# --> Yes, seems to be a positive correlation in neg. and pos. diabetes, but the correlation looks stronger in neg. diabetes
 ggplot(data = tidy_data) +
   aes(
     x = glucose_mg_dl,
@@ -33,8 +35,8 @@ ggplot(data = tidy_data) +
     aes(color = diabetes_5_year)
   )
 
-#Create plot to examine the correlation between glucose and blood pressure:
-
+#Create plot to examine the correlation between glucose and blood pressure: ----
+# --> There does not seem to be strong correlation between glucose and blood pressure.
 ggplot(data = tidy_data) +
   aes(
     x = glucose_mg_dl,
@@ -43,14 +45,10 @@ ggplot(data = tidy_data) +
   geom_point() +
   geom_smooth(method = "lm")
 
-#There does not seem to be strong correlation between glucose and blood pressure.
 
 
-
-
-
-# Create plot to examine the relation between the `BMI` and `triceps_mm` values.
-#There was a strong relationship between `BMI` and `triceps_mm` in our data
+# Create plot to examine the relation between the `BMI` and `triceps_mm` values.----
+# --> There was a strong relationship between `BMI` and `triceps_mm` in our data
 
 
 ggplot(data = tidy_data) +
@@ -64,10 +62,7 @@ ggplot(data = tidy_data) +
 
 
 
-# Create plot to examine the blood pressure distribution in different BMI categories:
-
-
-
+# Create plot to examine the blood pressure distribution in different BMI categories:----
 library(tidyverse)
 
 # creating BMI categories and their order
@@ -91,4 +86,4 @@ ggplot(data = tidy_data) +
   geom_boxplot()
 
 
-#Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
+# --> Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
