@@ -1,6 +1,7 @@
 library(tidyverse)
 # install.packages("tidyverse")
 library(here)
+#install.packages("ggcorrplot")
 
 
 #read data ----
@@ -8,18 +9,15 @@ exam_tidy<- read_delim(here("DATA", "exam_data_tidy_modified2024-09-11.txt"))
 
 
 
-# to see are there any correlated measurements?
-
-
+# Checking for correlated measurements, computing correlation matrix and plotting ----
+# --> In the correlation matrix we mostly saw positive correlation. And especially, glucose_mg_dl and insulin_microiu_ml correalated, and bmi and triceps_mm were correlated
 
 library(ggcorrplot)
 numeric_data <- tidy_data %>%
   select(where(is.numeric))
 
-# Compute the correlation matrix
 corr <- cor(numeric_data, use = "complete.obs")
 
-# Ploting
 ggcorrplot(
   corr,
   method = "square",           
@@ -40,9 +38,6 @@ ggcorrplot(
   tl.srt = 45,                  
   digits = 2                   
 )
-
-
-# In the correlation matrix we mostly saw positive correlation. And especially, glucose_mg_dl and insulin_microiu_ml correalated, and bmi and triceps_mm were correlated
 
 
 # Correlated measurements? Does the level of glucose and insulin depend on each other? ----
