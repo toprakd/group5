@@ -159,9 +159,13 @@ tidy_data %>%
 ```
 
 
+```{r}
+summary(tidy_data)
+```
+Triceps_mm, insulin_microiu_ml, and bmi has NA vaules
+
+
 ## Plots
-
-
 ## Statistical analysis ----
 ```{r}
 exam_tidy %>% 
