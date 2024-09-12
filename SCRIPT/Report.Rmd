@@ -28,7 +28,7 @@ exam_nontidy
 ```
 
 ## TIDYING THE DATA
-  to tidy the data, we had to:
+To tidy the data, we had to:
 - remove duplicated rows
 - rename coloumns that contain spaces or start with numbers.
 - separate subject and pregnancy_num-age coloumns into two
@@ -66,7 +66,9 @@ join_data <- join_data %>%
   rename(ID = id)
 ```
 Merge steps
+???
 - remove unnecessary "cholesterol" and "sibling" columns 
+- correct the variable types 
 - adding a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
 - adding a column showing `diabetes_5y` as 0/1
 - adding a numeric column showing multiplication of `age` and `pregnancy_num` for each person
@@ -76,6 +78,7 @@ Merge steps
 ```{r}
 tidy_data <- tidy_data %>% 
   select(- cholesterol, - sibling)  %>% 
+  mutate(across(ID:age, as.numeric)) %>%
   mutate(glucose_mg_dl_categoric = ifelse(glucose_mg_dl >120, "High", "Low"),
          insulin_pmol_L = insulin_microiu_ml * 6.945, 
          diabetes_5_year_binary= ifelse(diabetes_5_year== "neg",0,1),
