@@ -43,13 +43,6 @@ to tidy the data, we had to:
 ?
 ```{r} 
 
-# Exploring the data
-head(exam_nontidy)
-tail(exam_nontidy,15)
-summary(exam_nontidy)
-str(exam_nontidy)
-glimpse(exam_nontidy)
-skimr::skim(exam_nontidy)
 
 
 
@@ -79,6 +72,13 @@ exam_tidy <- df1 %>%
   distinct() %>%   #remove duplicates 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value) #.value include values from 2 features/measurements
+
+
+
+
+
+
+summary(exam_nontidy)
 
 ```
 
