@@ -43,7 +43,13 @@ to tidy the data, we had to:
 ?
 ```{r} 
 
-
+# Exploring the data
+head(exam_nontidy)
+tail(exam_nontidy,15)
+summary(exam_nontidy)
+str(exam_nontidy)
+glimpse(exam_nontidy)
+skimr::skim(exam_nontidy)
 
 
 #Changing the names of coloumns
@@ -59,12 +65,9 @@ df <- separate(exam_nontidy, subject, sep ="-",
                into = c("hospital", "ID"))
 
 
-
-
 #Separate variable pregnancy_num-age into pregnancy_num and age:
 df1 <- separate(df, "pregnancy_num-age", sep ="-",
                 into = c("preg_num", "age"))
-
 
 
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
@@ -72,13 +75,6 @@ exam_tidy <- df1 %>%
   distinct() %>%   #remove duplicates 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value) #.value include values from 2 features/measurements
-
-
-
-
-
-
-summary(exam_nontidy)
 
 ```
 
@@ -94,53 +90,33 @@ addded this ad so on
 
 ## Statistical analysis
 
-
 ```{r}
 exam_tidy %>% 
   kruskal.test(diabetes_5_year~pedigree, data = .) %>%
   broom::tidy()
+```
+The effect of pedigree on diabetes outcome was not statistically significant so diabetes does not seems to be effected by pedigree  
 
-
+```{r}
 exam_tidy %>% 
   kruskal.test(diabetes_5_year~bmi, data = .) %>%
   broom::tidy()
+```
+The effect of BMI on diabetes was statistically significant so diabetes seems to be effected by BMI
 
-
+```{r}
 exam_tidy %>% 
   kruskal.test(diabetes_5_year~glucose_mg_dl, data = .) %>%
   broom::tidy()
+```
+The effect of glucose_mg_dl on diabetes was statistically significant so so diabetes seems to be effected by glucose levels 
 
-
-
+```{r}
 exam_tidy %>% 
   kruskal.test(diabetes_5_year~hospital, data = .) %>%
   broom::tidy()
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The effect of hospital on diabetes was not statistically significant so diabetes seems to be effected by hospital
 
 
 ```{r}
