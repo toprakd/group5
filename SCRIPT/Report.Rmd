@@ -12,39 +12,29 @@ The data comes from randomized trial,
 [here are details](https://github.com/toprakd/group5/blob/main/DATA/codebook_updated)
 
 
-### Reading data 
+### READING DATA ---- 
 ```{r include=FALSE}
 library(tidyverse)
 # install.packages("tidyverse")
 library(here)
-
 
 #read data
 exam_nontidy <- read_delim(here("DATA", "exam_nontidy.txt"))
 ```
 
 
-
 ```{r}
 exam_nontidy
 ```
 
-##Tidying the data
-
-to tidy the data, we had to:
-
+## TIDYING THE DATA
+  to tidy the data, we had to:
 - remove duplicated rows
 - rename coloumns that contain spaces or start with numbers.
 - separate subject and pregnancy_num-age coloumns into two
 - create to new coloums called glucose_mg_dl and dbp_mm_hg because the .value coloumn was including values from both features.
-- remove unnecessary "cholesterol" and "sibling" columns 
-- add a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
-    
 
 ```{r} 
-
-
-
 #Changing the names of coloumns
 exam_nontidy <- 
   exam_nontidy %>% 
@@ -52,28 +42,23 @@ exam_nontidy <-
          diabetes_5_year = `5y diabetes`,
          cholesterol = choleste)
 
-
 #Separate variable subject into hospital and ID:
 df <- separate(exam_nontidy, subject, sep ="-",
                into = c("hospital", "ID"))
 
-
 #Separate variable pregnancy_num-age into pregnancy_num and age:
 df1 <- separate(df, "pregnancy_num-age", sep ="-",
                 into = c("preg_num", "age"))
-
 
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
 tidy_data <- df1 %>%
   distinct() %>%   #remove duplicates 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value) #.value include values from 2 features/measurements
-
 ```
 
 
-
-## Wrangling ----
+## WRANGLING ----
 Read and join the additional dataset to your main dataset 
 ```{r}
 join_data <- read.delim(here("DATA/exam_joindata.txt"))
@@ -81,13 +66,18 @@ join_data <- join_data %>%
   rename(ID = id)
 ```
 Merge steps
+- remove unnecessary "cholesterol" and "sibling" columns 
+- adding a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
+- adding a column showing `diabetes_5y` as 0/1
+- adding a numeric column showing multiplication of `age` and `pregnancy_num` for each person
+- Settin the order of columns as: `id, hospital, age` and other columns
+- Arrange ID column of your dataset in order of increasing number or alphabetically
+
 ```{r}
-
-
 tidy_data <- tidy_data %>% 
   select(- cholesterol, - sibling)  %>% 
   mutate(glucose_mg_dl_categoric = ifelse(glucose_mg_dl >120, "High", "Low"),
-         insulin_pmol_L = insulin_microiu_ml * 6.945,
+         insulin_pmol_L = insulin_microiu_ml * 6.945, 
          diabetes_5_year_binary= ifelse(diabetes_5_year== "neg",0,1),
          multiplication_age_and_pregnancy_num= preg_num*age) %>% 
   select(ID, hospital, age, everything()) %>% 
@@ -158,15 +148,13 @@ tidy_data %>%
   summarise(count = n())
 ```
 
-
 ```{r}
 summary(tidy_data)
 ```
 Triceps_mm, insulin_microiu_ml, and bmi has NA vaules
 
 
-## Plots
-
+## PLOTS ----
 ```{r}
 # Checking for correlated measurements, computing correlation matrix and plotting:
 
@@ -276,7 +264,8 @@ ggplot(data = tidy_data) +
 ```
 - Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
 
-## Statistical analysis ----
+
+## STATISTICAL ANALYSIS ----
 ```{r}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~pedigree, data = .) %>%
@@ -306,9 +295,6 @@ tidy_data %>%
 The effect of hospital on diabetes was not statistically significant so diabetes seems to be effected by hospital
 
 
-```{r}
-sessionInfo()
-```
 
 
 
