@@ -41,8 +41,6 @@ to tidy the data, we had to:
 - add a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
     
 
-        - some columns can include values from various features/measurements
-?
 ```{r} 
 
 
@@ -66,7 +64,7 @@ df1 <- separate(df, "pregnancy_num-age", sep ="-",
 
 
 #remove duplicates and pivot wider (for the measured variable and the .value coloumn)
-exam_tidy <- df1 %>%
+tidy_data <- df1 %>%
   distinct() %>%   #remove duplicates 
   pivot_wider(names_from = `measured variable`, 
               values_from = .value) #.value include values from 2 features/measurements
@@ -84,6 +82,8 @@ join_data <- join_data %>%
 ```
 Merge steps
 ```{r}
+
+
 tidy_data <- tidy_data %>% 
   select(- cholesterol, - sibling)  %>% 
   mutate(glucose_mg_dl_categoric = ifelse(glucose_mg_dl >120, "High", "Low"),
@@ -166,30 +166,140 @@ Triceps_mm, insulin_microiu_ml, and bmi has NA vaules
 
 
 ## Plots
+
+```{r}
+# Checking for correlated measurements, computing correlation matrix and plotting:
+
+library(ggcorrplot)
+numeric_data <- tidy_data %>%
+  select(where(is.numeric))
+
+corr <- cor(numeric_data, use = "complete.obs")
+
+ggcorrplot(
+  corr,
+  method = "square",           
+  type = "full",                #
+  ggtheme = ggplot2::theme_minimal(),
+  title = "Correlation Matrix",
+  show.legend = TRUE,
+  legend.title = "Corr",
+  show.diag = TRUE,             
+  colors = c("blue", "white", "red"),
+  outline.color = "gray",
+  hc.order = FALSE,             
+  lab = TRUE,                   
+  lab_col = "black",
+  lab_size = 4,
+  tl.cex = 12,                  
+  tl.col = "black",
+  tl.srt = 45,                  
+  digits = 2                   
+)
+```
+- In the correlation matrix we mostly saw positive correlation. And especially, glucose_mg_dl and insulin_microiu_ml correalated, and bmi and triceps_mm were correlated.
+```{r}
+# Examine if the level of glucose and insulin depend on each other:
+
+ggplot(data = tidy_data) +
+  aes(
+    x = glucose_mg_dl,
+    y = insulin_microiu_ml
+  ) +
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+- The glucose and insulin level seems to be dependent on each other.
+```{r}
+# Examine if the level of glucose and insulin depend on each other, when stratifying by outcome (`diabetes_5_year`):
+ggplot(data = tidy_data) +
+  aes(
+    x = glucose_mg_dl,
+    y = insulin_microiu_ml
+  ) +
+  geom_point(
+    aes(color = diabetes_5_year,
+        shape = diabetes_5_year),
+    size = 2 
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    aes(color = diabetes_5_year)
+  )
+```
+- The level of glucose and insulin depend in both 5 year diabetes positive and negative patients, but the correlation looks stronger in diabetes negative patients. 
+```{r}
+#Examine the correlation between glucose and blood pressure: 
+ggplot(data = tidy_data) +
+  aes(
+    x = glucose_mg_dl,
+    y = dbp_mm_hg
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+- There does not seem to be strong correlation between glucose and blood pressure.
+```{r}
+# Examine the relation between the `BMI` and `triceps_mm` values:
+ggplot(data = tidy_data) +
+  aes(
+    x = bmi,
+    y = triceps_mm
+  ) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+- There was a strong relationship between BMI and triceps_mm.
+```{r}
+# Examine the blood pressure distribution in different BMI categories:
+
+# Creating BMI categories:
+tidy_data <- tidy_data %>%
+  mutate(
+    bmi_category = case_when(
+      bmi < 25 ~ "healthy_weight",
+      bmi >= 25 & bmi < 30 ~ "over_weight",
+      bmi >= 30 ~ "obesity"
+    ),
+    # Order of levels:
+    bmi_category = factor(bmi_category, levels = c("healthy_weight", "over_weight", "obesity"))
+  )
+
+# Plotting:
+ggplot(data = tidy_data) +
+  aes(
+    x = bmi_category,
+    y = dbp_mm_hg
+  ) +
+  geom_boxplot()
+```
+- Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
+
 ## Statistical analysis ----
 ```{r}
-exam_tidy %>% 
+tidy_data %>% 
   kruskal.test(diabetes_5_year~pedigree, data = .) %>%
   broom::tidy()
 ```
 The effect of pedigree on diabetes outcome was not statistically significant so diabetes does not seems to be effected by pedigree  
 
 ```{r}
-exam_tidy %>% 
+tidy_data %>% 
   kruskal.test(diabetes_5_year~bmi, data = .) %>%
   broom::tidy()
 ```
 The effect of BMI on diabetes was statistically significant so diabetes seems to be effected by BMI
 
 ```{r}
-exam_tidy %>% 
+tidy_data %>% 
   kruskal.test(diabetes_5_year~glucose_mg_dl, data = .) %>%
   broom::tidy()
 ```
 The effect of glucose_mg_dl on diabetes was statistically significant so so diabetes seems to be effected by glucose levels 
 
 ```{r}
-exam_tidy %>% 
+tidy_data %>% 
   kruskal.test(diabetes_5_year~hospital, data = .) %>%
   broom::tidy()
 ```
