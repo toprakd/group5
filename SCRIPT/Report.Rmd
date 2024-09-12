@@ -1,0 +1,153 @@
+---
+title: "Report_test"
+author: "toprak"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+## Original data
+
+The data comes from randomized trial,
+[here are details](https://github.com/toprakd/group5/blob/main/DATA/codebook_updated)
+
+
+### Reading data 
+```{r include=FALSE}
+library(tidyverse)
+# install.packages("tidyverse")
+library(here)
+
+
+#read data
+exam_nontidy <- read_delim(here("DATA", "exam_nontidy.txt"))
+```
+
+
+
+```{r}
+exam_nontidy
+```
+
+##Tidying the data
+
+to tidy the data, we had to:
+
+- remove duplicated rows
+- rename coloumns that contain spaces or start with numbers.
+- separate subject and pregnancy_num-age coloumns into two
+- create to new coloums called glucose_mg_dl and dbp_mm_hg because the .value coloumn was including values from both features.
+    
+
+        - some columns can include values from various features/measurements
+?
+```{r} 
+
+# Exploring the data
+head(exam_nontidy)
+tail(exam_nontidy,15)
+summary(exam_nontidy)
+str(exam_nontidy)
+glimpse(exam_nontidy)
+skimr::skim(exam_nontidy)
+
+
+
+#Changing the names of coloumns
+exam_nontidy <- 
+  exam_nontidy %>% 
+  rename(insulin_microiu_ml = `insulin microiu ml`,
+         diabetes_5_year = `5y diabetes`,
+         cholesterol = choleste)
+
+
+#Separate variable subject into hospital and ID:
+df <- separate(exam_nontidy, subject, sep ="-",
+               into = c("hospital", "ID"))
+
+
+
+
+#Separate variable pregnancy_num-age into pregnancy_num and age:
+df1 <- separate(df, "pregnancy_num-age", sep ="-",
+                into = c("preg_num", "age"))
+
+
+
+#remove duplicates and pivot wider (for the measured variable and the .value coloumn)
+exam_tidy <- df1 %>%
+  distinct() %>%   #remove duplicates 
+  pivot_wider(names_from = `measured variable`, 
+              values_from = .value) #.value include values from 2 features/measurements
+
+```
+
+
+
+## Wrangling
+
+addded this ad so on
+
+
+## Plots
+
+
+## Statistical analysis
+
+
+```{r}
+exam_tidy %>% 
+  kruskal.test(diabetes_5_year~pedigree, data = .) %>%
+  broom::tidy()
+
+
+exam_tidy %>% 
+  kruskal.test(diabetes_5_year~bmi, data = .) %>%
+  broom::tidy()
+
+
+exam_tidy %>% 
+  kruskal.test(diabetes_5_year~glucose_mg_dl, data = .) %>%
+  broom::tidy()
+
+
+
+exam_tidy %>% 
+  kruskal.test(diabetes_5_year~hospital, data = .) %>%
+  broom::tidy()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+sessionInfo()
+```
+
+
+
+
+
