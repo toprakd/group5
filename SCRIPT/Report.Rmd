@@ -12,7 +12,7 @@ The data comes from Diabetes Prediction Dataset from the Pima Indian Tribe and t
 [here are details](https://github.com/toprakd/group5/blob/main/DATA/codebook_updated).
 
 
-### READING DATA 
+## READING DATA 
 ```{r include=FALSE}
 library(tidyverse)
 # install.packages("tidyverse")
@@ -22,7 +22,7 @@ library(here)
 exam_nontidy <- read_delim(here("DATA", "exam_nontidy.txt"))
 ```
 
-
+We read the data. In the beginning, the data were as shown.
 ```{r}
 exam_nontidy
 ```
@@ -59,7 +59,7 @@ tidy_data <- df1 %>%
 ```
 
 
-## WRANGLING 
+## WRANGLING THE DATA
 
 We did the following steps to further tidy our data:
 
@@ -95,13 +95,13 @@ tidy_data <- tidy_data %>%
 ```
 
 Summary and overview of our data:
+After all of the data preparation steps, our final data looked like this:
 ```{r echo=FALSE}
-summary(tidy_data)
+tidy_data
 ```
-- Triceps_mm, insulin_microiu_ml, bmi, diabetes_5_year, dbp_mm_hg, insulin_pmol_L and antibody had some NA vaules.
 
 
-Exploration of missing data 
+Triceps_mm, insulin_microiu_ml, bmi, diabetes_5_year, dbp_mm_hg, insulin_pmol_L and antibody coloumns had some NA vaules, as shown in the figure:
 
 ```{r echo=FALSE}
 naniar::gg_miss_var(tidy_data)
@@ -156,7 +156,7 @@ tidy_data  %>%
 ```
 
 - Patient numbers according to different hospitals and diabetes status
-```{r echo=FALSE}
+```{r echo=FALSE,warning=FALSE, message=FALSE}
 tidy_data %>%
   group_by(hospital, diabetes_5_year) %>%
   summarise(count = n())
@@ -164,9 +164,11 @@ tidy_data %>%
 
 
 ## PLOTS 
-We made plots to check if there was any correlated measurements:
+We made 6 plots to check if there was any correlated measurements:
 
-```{r echo=FALSE}
+### Plot 1: Correlation matrix
+
+```{r echo=FALSE,fig.width=10, fig.height=10}
 # Checking for correlated measurements, computing correlation matrix and plotting:
 
 library(ggcorrplot)
@@ -197,10 +199,11 @@ ggcorrplot(
 )
 ```
 
-- In the correlation matrix we mostly saw positive correlations. Especially, "glucose_mg_dl" and "insulin_microiu_ml" correlated, and bmi and "triceps_mm" were correlated.
+
+In the correlation matrix we mostly saw positive correlations. Especially, "glucose_mg_dl" and "insulin_microiu_ml" correlated, and bmi and "triceps_mm" were correlated.
 
 
-Created plot to examine if the level of glucose and insulin depend on each other:
+### Plot 2: The level of glucose vs insulin
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -214,10 +217,12 @@ ggplot(data = tidy_data) +
 
 ```
 
-- The glucose and insulin level seems to be dependent on each other.
+
+The glucose and insulin level seems to be dependent on each other.
 
 
-Examined if the level of glucose and insulin depend on each other when stratifying by outcome (`diabetes_5_year`):
+### Plot 3: The level of glucose vs insulin depend against "diabetes_5_year"
+
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -238,10 +243,9 @@ ggplot(data = tidy_data) +
   )
 ```
 
-- The level of glucose and insulin were correlated in both 5 year diabetes positive and negative patients, but the correlation seemed stronger in diabetes negative patients. 
+The level of glucose and insulin were correlated in both 5 year diabetes positive and negative patients, but the correlation seemed stronger in diabetes negative patients. 
 
-
-Examine the correlation between glucose and blood pressure: 
+### Plot 4: The level of glucose vs blood pressure
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -254,10 +258,9 @@ ggplot(data = tidy_data) +
   geom_smooth(method = "lm")
 ```
 
-- There does not seem to be strong correlation between glucose and blood pressure.
+ There does not seem to be strong correlation between glucose and blood pressure.
 
-
-Examine the relation between the `BMI` and `triceps_mm` values:
+### Plot 5: BMI values vs triceps_mm values
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -270,10 +273,11 @@ ggplot(data = tidy_data) +
   geom_smooth(method = "lm")
 ```
 
-- There was a strong relationship between BMI and triceps_mm.
+There was a strong relationship between BMI and triceps_mm.
 
 
-Examine the blood pressure distribution in different BMI categories:
+### Plot 6: The blood pressure distribution in different BMI categories
+
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
 
@@ -298,14 +302,14 @@ ggplot(data = tidy_data) +
   geom_boxplot()
 ```
 
-- Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
+Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
 
 
 ## STATISTICAL ANALYSIS 
 
-We analysed the datasets to check if diabetes outcome were dependent on the following variables:
+We analysed the datasets to check if diabetes outcome were dependent on the following 4 variables:
 
-Pedigree
+### Statistical test 1: Diabetes status against pedigree status
 ```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~pedigree, data = .) %>%
@@ -313,7 +317,7 @@ tidy_data %>%
 ```
 - The effect of pedigree on diabetes outcome was not statistically significant so diabetes does not seems to be effected by pedigree  
 
-BMI
+### Statistical test 2: Diabetes status against BMI values
 ```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~bmi, data = .) %>%
@@ -321,7 +325,7 @@ tidy_data %>%
 ```
 - The effect of BMI on diabetes was statistically significant so diabetes seems to be effected by BMI
 
-Glucose
+### Statistical test 3: Diabetes status against Glucose levels:
 ```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~glucose_mg_dl, data = .) %>%
@@ -329,7 +333,7 @@ tidy_data %>%
 ```
 - The effect of glucose_mg_dl on diabetes was statistically significant so so diabetes seems to be effected by glucose levels 
 
-Hospital
+### Statistical test 4: Diabetes status against Hospitals:
 ```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~hospital, data = .) %>%
