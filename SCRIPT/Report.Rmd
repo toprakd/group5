@@ -1,6 +1,6 @@
 ---
-title: "Report_test"
-author: "toprak"
+title: "Final report group 5"
+author: "Toprak, Siren, Cathrine"
 date: "`r Sys.Date()`"
 output: html_document
 ---
@@ -8,11 +8,11 @@ output: html_document
 
 ## Original data
 
-The data comes from randomized trial,
-[here are details](https://github.com/toprakd/group5/blob/main/DATA/codebook_updated)
+The data comes from Diabetes Prediction Dataset from the Pima Indian Tribe and the NIDDK,
+[here are details](https://github.com/toprakd/group5/blob/main/DATA/codebook_updated).
 
 
-### READING DATA ---- 
+### READING DATA 
 ```{r include=FALSE}
 library(tidyverse)
 # install.packages("tidyverse")
@@ -29,51 +29,56 @@ exam_nontidy
 
 ## TIDYING THE DATA
 To tidy the data, we had to:
+
 - remove duplicated rows
-- rename coloumns that contain spaces or start with numbers.
-- separate subject and pregnancy_num-age coloumns into two
-- create to new coloums called glucose_mg_dl and dbp_mm_hg because the .value coloumn was including values from both features.
+- rename coloumns that contain spaces or start with numbers
+- separate subject and "pregnancy_num-age" coloumns into two
+- create to new coloums called "glucose_mg_dl" and "dbp_mm_hg" because the ".value" coloumn was including values from both features
 
 ```{r} 
-#Changing the names of coloumns
+#Changing the names of coloumns:
 exam_nontidy <- 
   exam_nontidy %>% 
   rename(insulin_microiu_ml = `insulin microiu ml`,
          diabetes_5_year = `5y diabetes`,
          cholesterol = choleste)
 
-#Separate variable subject into hospital and ID:
+#Separate variable subject into "hospital" and "ID":
 df <- separate(exam_nontidy, subject, sep ="-",
                into = c("hospital", "ID"))
 
-#Separate variable pregnancy_num-age into pregnancy_num and age:
+#Separate variable "pregnancy_num-ag"e into "pregnancy_num" and "age":
 df1 <- separate(df, "pregnancy_num-age", sep ="-",
                 into = c("preg_num", "age"))
 
-#remove duplicates and pivot wider (for the measured variable and the .value coloumn)
+#remove duplicates and pivot wider (for the measured variable and the ".value" coloumn):
 tidy_data <- df1 %>%
-  distinct() %>%   #remove duplicates 
+  distinct() %>%    
   pivot_wider(names_from = `measured variable`, 
-              values_from = .value) #.value include values from 2 features/measurements
+              values_from = .value) 
 ```
 
 
-## WRANGLING ----
-Read and join the additional dataset to your main dataset 
-```{r}
+## WRANGLING 
+
+We did the following steps to further tidy our data:
+
+- remove unnecessary "cholesterol" and "sibling" columns 
+- correct the variable types 
+- adding a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
+- adding a column showing `diabetes_5_year` as 0/1
+- adding a numeric column showing multiplication of `age` and `pregnancy_num` for each person
+- setting the order of columns as: `ID, hospital, age` and other columns
+- arranged ID column of the dataset in order of increasing number 
+
+
+Then we merged our dataset with an additional dataset (exam_joindata). [Here are details for the additional data](https://github.com/toprakd/group5/blob/main/DATA/exam_joindata.txt.).
+
+```{r include=FALSE}
 join_data <- read.delim(here("DATA/exam_joindata.txt"))
 join_data <- join_data %>%
   rename(ID = id)
 ```
-Merge steps
-???
-- remove unnecessary "cholesterol" and "sibling" columns 
-- correct the variable types 
-- adding a numeric column showing insulin in units pmol/L (1 microiu_ml = 6.945 pmol_l)
-- adding a column showing `diabetes_5y` as 0/1
-- adding a numeric column showing multiplication of `age` and `pregnancy_num` for each person
-- Settin the order of columns as: `id, hospital, age` and other columns
-- Arrange ID column of your dataset in order of increasing number or alphabetically
 
 ```{r}
 tidy_data <- tidy_data %>% 
@@ -87,78 +92,81 @@ tidy_data <- tidy_data %>%
   arrange(ID) %>%
   full_join(join_data, join_by("ID")) 
 
-tidy_data  %>% 
-  group_by(hospital) %>% 
-  summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
-
 ```
 
-Summary and overview of our data 
-```{r}
-summary(tidy_data) 
-glimpse(tidy_data)
-skimr::skim(tidy_data)
+Summary and overview of our data:
+```{r echo=FALSE}
+summary(tidy_data)
 ```
+- Triceps_mm, insulin_microiu_ml, bmi, diabetes_5_year, dbp_mm_hg, insulin_pmol_L and antibody had some NA vaules.
 
-Explore and comment on missing data 
-```{r}
+
+Exploration of missing data 
+
+```{r echo=FALSE}
 naniar::gg_miss_var(tidy_data)
 ```
 
-Stratefying data 
-```{r}
+### Stratification
+
+Then we did the following stratification to explore our data:
+
+- Pregnancy numbers in different hospitals
+
+```{r echo=FALSE}
 tidy_data %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
 ```
 
-Diabetes 5 year pos 
-```{r}
+- Pregnancy numbers in different hospitals filtered by "diabetes_5_year" positive patiens 
+
+```{r echo=FALSE}
 tidy_data %>%
   filter(diabetes_5_year_binary == 1) %>%
   group_by(hospital) %>%
   summarise(min(preg_num), max(preg_num), mean(preg_num), sd(preg_num))
 ```
 
-Only for persons recruited in Hosp1 
-```{r}
+- Pregnancy numbers in Hospital 1
+
+```{r echo=FALSE}
 tidy_data  %>% 
   group_by(hospital) %>% 
   summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num )) %>%
   filter(hospital == "Hosp1")
 ```
 
-Only for persons with `pregnanyc_num` more than 2 
-```{r}
+- Only for persons with `pregnanyc_num` more than 2 
+
+```{r echo=FALSE}
 tidy_data  %>% 
   filter(preg_num>2)%>% 
   group_by(hospital) %>% 
   summarise( min(preg_num), max(preg_num), mean(preg_num),sd(preg_num ))
 ```
 
-`glucose_mg_dl` lower than 120 and `dbp_mm_hg` greater than 60
-```{r}
+- For `glucose_mg_dl` lower than 120 and `dbp_mm_hg` greater than 60
+
+```{r echo=FALSE}
 tidy_data  %>% 
   filter(glucose_mg_dl < 120, dbp_mm_hg > 60) %>% 
   group_by(hospital) %>% 
   summarise( min(preg_num), max(preg_num ), mean(preg_num),sd(preg_num ))
 ```
 
-Use two categorical columns in your dataset to create a table (hint: ?count)
-```{r}
+- Patient numbers according to different hospitals and diabetes status
+```{r echo=FALSE}
 tidy_data %>%
   group_by(hospital, diabetes_5_year) %>%
   summarise(count = n())
 ```
 
-```{r}
-summary(tidy_data)
-```
-Triceps_mm, insulin_microiu_ml, and bmi has NA vaules
 
+## PLOTS 
+We made plots to check if there was any correlated measurements:
 
-## PLOTS ----
-```{r}
+```{r echo=FALSE}
 # Checking for correlated measurements, computing correlation matrix and plotting:
 
 library(ggcorrplot)
@@ -188,21 +196,31 @@ ggcorrplot(
   digits = 2                   
 )
 ```
-- In the correlation matrix we mostly saw positive correlation. And especially, glucose_mg_dl and insulin_microiu_ml correalated, and bmi and triceps_mm were correlated.
-```{r}
-# Examine if the level of glucose and insulin depend on each other:
+
+- In the correlation matrix we mostly saw positive correlations. Especially, "glucose_mg_dl" and "insulin_microiu_ml" correlated, and bmi and "triceps_mm" were correlated.
+
+
+Created plot to examine if the level of glucose and insulin depend on each other:
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 ggplot(data = tidy_data) +
   aes(
     x = glucose_mg_dl,
     y = insulin_microiu_ml
-  ) +
-  geom_point()+
+  ) + 
+  geom_point() +
   geom_smooth(method = "lm")
+
 ```
+
 - The glucose and insulin level seems to be dependent on each other.
-```{r}
-# Examine if the level of glucose and insulin depend on each other, when stratifying by outcome (`diabetes_5_year`):
+
+
+Examined if the level of glucose and insulin depend on each other when stratifying by outcome (`diabetes_5_year`):
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
 ggplot(data = tidy_data) +
   aes(
     x = glucose_mg_dl,
@@ -219,9 +237,14 @@ ggplot(data = tidy_data) +
     aes(color = diabetes_5_year)
   )
 ```
-- The level of glucose and insulin depend in both 5 year diabetes positive and negative patients, but the correlation looks stronger in diabetes negative patients. 
-```{r}
-#Examine the correlation between glucose and blood pressure: 
+
+- The level of glucose and insulin were correlated in both 5 year diabetes positive and negative patients, but the correlation seemed stronger in diabetes negative patients. 
+
+
+Examine the correlation between glucose and blood pressure: 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
 ggplot(data = tidy_data) +
   aes(
     x = glucose_mg_dl,
@@ -230,9 +253,14 @@ ggplot(data = tidy_data) +
   geom_point() +
   geom_smooth(method = "lm")
 ```
+
 - There does not seem to be strong correlation between glucose and blood pressure.
-```{r}
-# Examine the relation between the `BMI` and `triceps_mm` values:
+
+
+Examine the relation between the `BMI` and `triceps_mm` values:
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
 ggplot(data = tidy_data) +
   aes(
     x = bmi,
@@ -241,9 +269,13 @@ ggplot(data = tidy_data) +
   geom_point() +
   geom_smooth(method = "lm")
 ```
+
 - There was a strong relationship between BMI and triceps_mm.
-```{r}
-# Examine the blood pressure distribution in different BMI categories:
+
+
+Examine the blood pressure distribution in different BMI categories:
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
 
 # Creating BMI categories:
 tidy_data <- tidy_data %>%
@@ -265,37 +297,45 @@ ggplot(data = tidy_data) +
   ) +
   geom_boxplot()
 ```
+
 - Blood pressure distributions tend to increase with higher obesity levels based on BMI categories. In patients with unknown BMI values, the pattern closely resembles that of the obesity group.
 
 
-## STATISTICAL ANALYSIS ----
-```{r}
+## STATISTICAL ANALYSIS 
+
+We analysed the datasets to check if diabetes outcome were dependent on the following variables:
+
+Pedigree
+```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~pedigree, data = .) %>%
   broom::tidy()
 ```
-The effect of pedigree on diabetes outcome was not statistically significant so diabetes does not seems to be effected by pedigree  
+- The effect of pedigree on diabetes outcome was not statistically significant so diabetes does not seems to be effected by pedigree  
 
-```{r}
+BMI
+```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~bmi, data = .) %>%
   broom::tidy()
 ```
-The effect of BMI on diabetes was statistically significant so diabetes seems to be effected by BMI
+- The effect of BMI on diabetes was statistically significant so diabetes seems to be effected by BMI
 
-```{r}
+Glucose
+```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~glucose_mg_dl, data = .) %>%
   broom::tidy()
 ```
-The effect of glucose_mg_dl on diabetes was statistically significant so so diabetes seems to be effected by glucose levels 
+- The effect of glucose_mg_dl on diabetes was statistically significant so so diabetes seems to be effected by glucose levels 
 
-```{r}
+Hospital
+```{r echo=FALSE}
 tidy_data %>% 
   kruskal.test(diabetes_5_year~hospital, data = .) %>%
   broom::tidy()
 ```
-The effect of hospital on diabetes was not statistically significant so diabetes seems to be effected by hospital
+- The effect of hospital on diabetes was not statistically significant so diabetes seems to be effected by hospital
 
 
 
